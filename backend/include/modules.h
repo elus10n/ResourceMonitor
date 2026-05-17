@@ -1,20 +1,9 @@
 #ifndef MODULES_H
 #define MODULES_H
 
+#include "../libs/json.hpp"
+
 ///Parser
-struct ParserOutput
-{
-    CPUData cpu_data;
-    MemoryData memory_data;
-    std::vector<ProcData> proc_data;
-};
-
-struct CPUData
-{
-    KernelData total;
-    std::vector<KernelData> kernel_data;
-};
-
 struct KernelData
 {
     std::string name;
@@ -32,22 +21,18 @@ struct KernelData
     uint64_t guest_nice_j;
 };
 
+struct CPUData
+{
+    KernelData total;
+    std::vector<KernelData> kernel_data;
+};
+
 struct MemoryData
 {
     //kb
     uint64_t mem_total;
     uint64_t mem_free;
     uint64_t mem_available;
-};
-
-struct ProcData
-{
-    ProcStat stat;
-
-    ProcMem statm;
-
-    // /proc/[pid]/cmdline
-    std::string command;
 };
 
 struct ProcStat
@@ -67,6 +52,65 @@ struct ProcMem
     uint64_t size; //pages
     uint64_t resident; //pages
 };
+
+struct ProcData
+{
+    ProcStat stat;
+
+    ProcMem statm;
+
+    // /proc/[pid]/cmdline
+    std::string command;
+};
+
+struct ParserOutput
+{
+    CPUData cpu_data;
+    MemoryData memory_data;
+    std::vector<ProcData> proc_data;
+};
 ///Parser
+
+///DataManager
+inline const nlohmann::json data_template = 
+{
+    {
+        "cpu", 
+        {
+            {"total_percent", 0.0},
+            {"cores", nlohmann::json::array()}
+        }
+    },
+    {
+        "memory", 
+        {
+            {"total_kb", 0},
+            {"free_kb", 0},
+            {"available_kb", 0},
+            {"usage_percent", 0.0}
+        }
+    },
+    {
+        "processes", nlohmann::json::array()
+    }
+};
+
+inline const nlohmann::json core_template =
+{
+    {"name", ""}, 
+    {"percent", 0.0}
+};
+
+inline const nlohmann::json process_template = 
+{
+    {"pid", 0},
+    {"name", ""},
+    {"state", ""},
+    {"cpu_percent", 0.0},
+    {"mem_size_pages", 0},
+    {"mem_resident_pages", 0},
+    {"command", ""}
+};
+///DataManager
 
 #endif
