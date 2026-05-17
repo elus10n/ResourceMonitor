@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include <sys/types.h>
+#include <algorithm>
 
 #include "modules.h"
 
@@ -22,7 +23,6 @@ class Parser
     ProcStat stat_parse(std::filesystem::path path) const;
     ProcMem statm_parse(std::filesystem::path path) const;
     std::string cmd_parse(std::filesystem::path path) const;
-
 
     public:
     ParserOutput parse() const;

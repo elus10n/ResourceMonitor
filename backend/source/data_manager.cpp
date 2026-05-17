@@ -14,7 +14,9 @@ uint64_t DataManager::get_total_jiffies(const KernelData& data) const
 
 nlohmann::json DataManager::get_data() 
 {
+    report_log("start parsing");
     ParserOutput current = parser.parse();
+    report_log("stop parsing");
 
     nlohmann::json result = data_template;
 
@@ -129,4 +131,10 @@ nlohmann::json DataManager::prepare_process_json(const ProcData &data) const
     p_json["command"] = data.command;
 
     return p_json;
+}
+
+void DataManager::report_log(const std::string& log) const
+{
+    if(callback_) 
+        callback_("[LOG]: " + log);
 }

@@ -1,7 +1,14 @@
 #ifndef MODULES_H
 #define MODULES_H
 
+#include <functional>
+#include <string>
+
 #include "../libs/json.hpp"
+
+///Logger
+using logCallback = std::function<void(const std::string&)>;
+///Logger
 
 ///Parser
 struct KernelData

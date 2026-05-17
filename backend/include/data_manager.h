@@ -2,6 +2,7 @@
 #define DATA_MANAGER_H
 
 #include <unordered_map>
+#include <cmath>
 
 #include "modules.h"
 #include "parser.h"
@@ -14,6 +15,8 @@ class DataManager
 
     Parser parser;
 
+    logCallback callback_;
+
     nlohmann::json prepare_cpu_json(const CPUData &data) const;
 
     nlohmann::json prepare_memory_json(const MemoryData &data) const;
@@ -23,10 +26,14 @@ class DataManager
 
     uint64_t get_total_jiffies(const KernelData& data) const;
 
+    void report_log(const std::string& log) const;
+
     public:
     DataManager() : prev(parser.parse()) {}
 
     nlohmann::json get_data();
+
+    void set_callback(logCallback callback) { callback_ = callback;}
 };
 
 #endif
