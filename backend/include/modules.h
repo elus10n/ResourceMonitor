@@ -11,6 +11,7 @@ struct ParserOutput
 
 struct CPUData
 {
+    KernelData total;
     std::vector<KernelData> kernel_data;
 };
 
@@ -41,6 +42,16 @@ struct MemoryData
 
 struct ProcData
 {
+    ProcStat stat;
+
+    ProcMem statm;
+
+    // /proc/[pid]/cmdline
+    std::string command;
+};
+
+struct ProcStat
+{
     // /proc/[pid]/stat
     pid_t pid;
     std::string e_name;
@@ -48,12 +59,13 @@ struct ProcData
     uint64_t user_j;
     uint64_t system_j;
 
+};
+
+struct ProcMem
+{
     // /proc/[pid]/statm
     uint64_t size; //pages
     uint64_t resident; //pages
-
-    // /proc/[pid]/cmdline
-    std::string command;
 };
 ///Parser
 

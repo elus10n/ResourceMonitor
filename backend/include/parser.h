@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <filesystem>
+#include <fstream>
+#include <sstream>
 #include <string>
 #include <sys/types.h>
 
@@ -17,6 +19,10 @@ class Parser
     std::vector<ProcData> processes_parse() const;
 
     ProcData process_parse(pid_t pid) const;
+    ProcStat stat_parse(std::filesystem::path path) const;
+    ProcMem statm_parse(std::filesystem::path path) const;
+    std::string cmd_parse(std::filesystem::path path) const;
+
 
     public:
     ParserOutput parse() const;
