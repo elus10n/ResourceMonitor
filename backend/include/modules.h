@@ -68,6 +68,8 @@ struct ProcData
 
     // /proc/[pid]/cmdline
     std::string command;
+
+    std::string owner;
 };
 
 struct ParserOutput
@@ -98,7 +100,14 @@ inline const nlohmann::json data_template =
         }
     },
     {
-        "processes", nlohmann::json::array()
+        "processes",
+        {
+            {"count_of_processes", 0},
+            {"count_of_zombie", 0},
+            {"count_of_running", 0},
+            {"count_of_sleeping", 0},
+            {"processes", nlohmann::json::array()}
+        }
     }
 };
 
@@ -111,6 +120,7 @@ inline const nlohmann::json core_template =
 inline const nlohmann::json process_template = 
 {
     {"pid", 0},
+    {"owner", ""},
     {"name", ""},
     {"state", ""},
     {"cpu_percent", 0.0},

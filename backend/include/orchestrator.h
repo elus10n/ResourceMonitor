@@ -21,12 +21,20 @@ class Orchestrator
     Server server;
     DataManager data_manager;
 
+    logCallback callback_;
+
+    void report_log(const std::string& log) const
+    {
+        if(callback_) 
+            callback_("[LOG]: " + log);
+    }
+
     public:
     Orchestrator()
     {
-        auto callback = Logger::get_callback(std::cout);
-        server.set_callback(callback);
-        data_manager.set_callback(callback);
+        callback_ = Logger::get_callback(std::cout);
+        server.set_callback(callback_);
+        data_manager.set_callback(callback_);
     }
 
     ~Orchestrator() = default;
@@ -36,9 +44,9 @@ class Orchestrator
 
     void run(uint16_t port = 8080)
     {
-        server.start(port);
-
         std::signal(SIGINT, signal_handler);
+
+        server.start(port);
 
         while (is_running) 
         {
@@ -46,12 +54,13 @@ class Orchestrator
 
             nlohmann::json fresh_data = data_manager.get_data();
             
+            report_log("broadcast");
             server.broadcast(fresh_data.dump());
 
             auto end_time = std::chrono::steady_clock::now();
             auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
             
-            if (elapsed < std::chrono::milliseconds(1000)) std::this_thread::sleep_for(std::chrono::milliseconds(1000) - elapsed);
+            if (elapsed < std::chrono::milliseconds(1500)) std::this_thread::sleep_for(std::chrono::milliseconds(1500) - elapsed);
         }
     }
 };

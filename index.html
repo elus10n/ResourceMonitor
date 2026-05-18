@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux System Monitor</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="logo">Resource Monitor <span class="status-badge" id="ws-status">Disconnected</span></div>
+        <div class="global-stats">
+            <span>Процессов: <strong id="stat-proc-count">0</strong></span>
+            <span>Работает: <strong id="stat-work-count">0</strong></span>
+            <span>Спит: <strong id="stat-sleep-count">0</strong></span>
+            <span>Зомби: <strong id="stat-zombie-count" class="zombie-alert">0</strong></span>
+        </div>
+    </header>
+
+    <main class="dashboard">
+        <section class="card cpu-card">
+            <h2>Загрузка CPU (<span id="cpu-total-val">0</span>%)</h2>
+            <div class="progress-bar-container main-progress">
+                <div class="progress-bar" id="cpu-total-bar" style="width: 0%"></div>
+            </div>
+            <div class="cpu-cores-grid" id="cpu-cores-container"></div>
+        </section>
+
+        <section class="card mem-card">
+            <h2>Оперативная память</h2>
+            <div class="progress-bar-container main-progress memory">
+                <div class="progress-bar" id="mem-usage-bar" style="width: 0%"></div>
+            </div>
+            <div class="mem-details">
+                <p>Использовано: <span id="mem-used-val">0</span> MB (<span id="mem-percent-val">0</span>%)</p>
+                <p>Свободно: <span id="mem-free-val">0</span> MB</p>
+                <p>Доступно: <span id="mem-avail-val">0</span> MB / <span id="mem-total-val">0</span> MB</p>
+            </div>
+        </section>
+    </main>
+
+    <section class="process-section">
+        <div class="table-header-container">
+            <h2>Активные процессы</h2>
+            <input type="text" id="proc-search" placeholder="Поиск процесса по имени...">
+        </div>
+        <div class="table-wrapper">
+            <table class="proc-table">
+                <thead>
+                    <tr>
+                        <th data-sort="pid" class="sortable sorted-asc">PID</th>
+                        <th data-sort="owner" class="sortable">USER</th>
+                        <th data-sort="name" class="sortable">NAME</th>
+                        <th data-sort="state" class="sortable">STATUS</th>
+                        <th data-sort="cpu_percent" class="sortable">CPU %</th>
+                        <th data-sort="mem_size_pages" class="sortable">VIRT</th>
+                        <th data-sort="mem_resident_pages" class="sortable">RAM</th>
+                        <th data-sort="command">COMMAND</th>
+                    </tr>
+                </thead>
+                <tbody id="proc-table-body"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/app.js" defer></script>
+</body>
+</html>Ы

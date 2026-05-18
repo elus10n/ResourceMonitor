@@ -1,0 +1,321 @@
+/* ==========================================================================
+   1. СБРОС СТИЛЕЙ И ГЛОБАЛЬНЫЕ НАСТРОЙКИ (Reset & Base)
+   ========================================================================== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg-main: #14161a;         /* Глубокий темно-серый фон */
+    --bg-card: #1c1f26;         /* Фон карточек и панелей */
+    --bg-hover: #282d37;        /* Фон при наведении */
+    --border-color: #2d333f;    /* Цвет границ */
+    --text-main: #e3e6ed;       /* Основной текст (светлый) */
+    --text-muted: #8b949e;      /* Второстепенный текст */
+    
+    /* Акценты и статусы (приглушенные htop-like цвета) */
+    --accent-blue: #58a6ff;     /* Синий акцент (Память / Элементы управления) */
+    --accent-green: #3fb950;    /* Зеленый (Стабильный статус / Нагрузка CPU) */
+    --accent-orange: #f0883e;   /* Оранжевый (Умеренная нагрузка / Сон) */
+    --accent-red: #f85149;      /* Красный (Критическое состояние / Зомби) */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    line-height: 1.5;
+    padding: 20px;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   2. ШАПКА ПРИЛОЖЕНИЯ И ГЛОБАЛЬНАЯ СТАТИСТИКА (Header & Global Stats)
+   ========================================================================== */
+.app-header {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.logo {
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-badge {
+    font-size: 12px;
+    font-weight: normal;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background-color: #3a2223;
+    color: var(--accent-red);
+    border: 1px solid rgba(248, 81, 73, 0.2);
+    transition: all 0.3s ease;
+}
+
+.status-badge.connected {
+    background-color: #1b2d20;
+    color: var(--accent-green);
+    border: 1px solid rgba(63, 185, 80, 0.2);
+}
+
+.global-stats {
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.global-stats strong {
+    color: var(--text-main);
+}
+
+.zombie-alert {
+    color: var(--accent-red) !important;
+}
+
+/* ==========================================================================
+   3. ДЕШБОРД И ВИДЖЕТЫ (Dashboard & Cards)
+   ========================================================================== */
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 20px;
+}
+
+.card h2 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-main);
+}
+
+/* Прогресс-бары */
+.progress-bar-container {
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.main-progress {
+    height: 16px;
+    margin-bottom: 15px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: var(--accent-green);
+    transition: width 0.4s ease-out;
+}
+
+.main-progress.memory .progress-bar {
+    background-color: var(--accent-blue);
+}
+
+/* Сетка ядер CPU */
+.cpu-cores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.cpu-core {
+    font-size: 12px;
+}
+
+.core-label {
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.mini-progress {
+    height: 6px;
+}
+
+/* Специфика оперативной памяти */
+.mem-details {
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mem-details p {
+    color: var(--text-muted);
+}
+
+.mem-details span {
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   4. ТАБЛИЦА ПРОЦЕССОВ (Process Table & Search)
+   ========================================================================== */
+.process-section {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 20px;
+}
+
+.table-header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.table-header-container h2 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Поиск */
+#proc-search {
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    width: 260px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+#proc-search:focus {
+    border-color: var(--accent-blue);
+}
+
+/* Скроллбар и контейнер таблицы */
+.table-wrapper {
+    overflow-x: auto;
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.proc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace; /* Стили htop требуют моноширинный шрифт */
+    font-size: 12px;
+    text-align: left;
+}
+
+/* Фиксация шапки таблицы при вертикальном скролле */
+.proc-table th {
+    background-color: #222731;
+    color: var(--text-main);
+    padding: 10px 12px;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    user-select: none;
+}
+
+/* Интерактивная сортировка */
+.proc-table th.sortable {
+    cursor: pointer;
+}
+
+.proc-table th.sortable:hover {
+    background-color: var(--bg-hover);
+    color: var(--accent-blue);
+}
+
+/* Стрелочки сортировки в htop стиле */
+.proc-table th.sortable::after {
+    content: " ↕";
+    font-size: 10px;
+    opacity: 0.3;
+}
+
+.proc-table th.sorted-asc::after {
+    content: " ▲";
+    opacity: 1;
+    color: var(--accent-blue);
+}
+
+.proc-table th.sorted-desc::after {
+    content: " ▼";
+    opacity: 1;
+    color: var(--accent-blue);
+}
+
+/* Строки */
+.proc-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+    color: #c9d1d9;
+}
+
+.proc-table tbody tr:hover {
+    background-color: var(--bg-hover);
+}
+
+/* Выделение важных колонок (как в htop) */
+.proc-name {
+    font-weight: bold;
+    color: #f2f4f8 !important;
+}
+
+.proc-cmd {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #8b949e !important;
+}
+
+/* Кастомизация полосы прокрутки (Scrollbar Customization) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #303642;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #484f58;
+}

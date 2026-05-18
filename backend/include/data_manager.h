@@ -3,6 +3,11 @@
 
 #include <unordered_map>
 #include <cmath>
+#include <sys/stat.h>
+#include <pwd.h>
+#include <unistd.h>
+#include <string>
+#include <filesystem>
 
 #include "modules.h"
 #include "parser.h"

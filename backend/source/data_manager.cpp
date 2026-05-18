@@ -90,7 +90,14 @@ nlohmann::json DataManager::prepare_memory_json(const MemoryData &data) const
 
 nlohmann::json DataManager::prepare_processes_json(const std::vector<ProcData> &data, const CPUData &current_cpu) const 
 {
+    nlohmann::json proc_json = data_template["processes"];
     nlohmann::json proc_list = nlohmann::json::array();
+    uint16_t processes = 0;
+    uint16_t z_processes = 0;
+    uint16_t r_processes = 0;
+    uint16_t s_processes = 0;
+
+    int kernel_count = current_cpu.kernel_data.size();
 
     std::unordered_map<pid_t, ProcData> prev_procs;
     for (const auto& p : prev.proc_data)
@@ -102,28 +109,41 @@ nlohmann::json DataManager::prepare_processes_json(const std::vector<ProcData> &
     {
         nlohmann::json p_json = prepare_process_json(proc);
 
+        processes++;
+        if(proc.stat.state == 'Z') z_processes++;
+        if(proc.stat.state == 'R') r_processes++;
+        if(proc.stat.state == 'S') s_processes++;
+
         if (prev_procs.contains(proc.stat.pid) && delta_system_total > 0) 
         {
             const auto& p_proc = prev_procs[proc.stat.pid];
             
             uint64_t proc_delta = (proc.stat.user_j + proc.stat.system_j) - (p_proc.stat.user_j + p_proc.stat.system_j);
             
-            double percent = (static_cast<double>(proc_delta) / delta_system_total) * 100.0;
+            double percent = (static_cast<double>(proc_delta) / delta_system_total) * 100.0 * kernel_count;
             p_json["cpu_percent"] = round_to_two_places(percent);
         }
 
-        if(p_json["cpu_percent"] > 0.0)
-            proc_list.push_back(p_json);
+        proc_list.push_back(p_json);
     }
 
-    return proc_list;
+    proc_json["processes"] = proc_list;
+    proc_json["count_of_processes"] = processes;
+    proc_json["count_of_zombie"] = z_processes;
+    proc_json["count_of_running"] = r_processes;
+    proc_json["count_of_sleeping"] = s_processes;
+
+    return proc_json;
 }
+
+std::string get_process_owner(pid_t pid);
 
 nlohmann::json DataManager::prepare_process_json(const ProcData &data) const 
 {
     nlohmann::json p_json = process_template;
 
     p_json["pid"] = data.stat.pid;
+    p_json["owner"] = get_process_owner(data.stat.pid);
     p_json["name"] = data.stat.e_name;
     p_json["state"] = std::string(1, data.stat.state);
     p_json["mem_size_pages"] = data.statm.size;
@@ -131,6 +151,19 @@ nlohmann::json DataManager::prepare_process_json(const ProcData &data) const
     p_json["command"] = data.command;
 
     return p_json;
+}
+
+std::string get_process_owner(pid_t pid) 
+{
+    std::string proc_path = "/proc/" + std::to_string(pid);
+    struct stat st;
+
+    if (stat(proc_path.c_str(), &st) != 0) return "unknown";
+
+    struct passwd* pw = getpwuid(st.st_uid);
+    if (pw != nullptr) return std::string(pw->pw_name);
+
+    return std::to_string(st.st_uid);
 }
 
 void DataManager::report_log(const std::string& log) const

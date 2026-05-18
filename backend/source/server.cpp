@@ -15,11 +15,12 @@ void Server::start(uint16_t port)
         try 
         {
             app.loglevel(crow::LogLevel::Warning);
+            app.signal_clear();
             app.port(port).multithreaded().run();
         } 
         catch (const std::exception& e) 
         {
-            report_error("Exception in server thread: " + e.what());
+            report_error(std::string("Exception in server thread: ") + e.what());
         }
     });
 }
@@ -51,14 +52,16 @@ void Server::setup_routes()
     });
 
     CROW_ROUTE(app, "/ws")
-        .websocket()
+        .websocket(&app)
         .onopen([this](crow::websocket::connection& conn) 
         {
+            report_log("Someone connected!");
             std::lock_guard<std::mutex> lock(mtx);
             connections.insert(&conn);
         })
         .onclose([this](crow::websocket::connection& conn, const std::string&) 
         {
+            report_log("Someone disconnected!");
             std::lock_guard<std::mutex> lock(mtx);
             connections.erase(&conn);
         });
